@@ -22,14 +22,20 @@ int main()
     if(a.size() == 0)
     {
         count=0;
-        goto label;
     }
-    for(int i=0;i<n;i++)
+    else
     {
-        if(a[i]==' ')
-            count++;
+        int flag=0;
+        for(int i=0;i<n-1;i++)
+        {
+            if(isalpha(a[i]))
+                flag=1;
+            if(a[i]==' ' && flag==0) continue;
+            else if(a[i]==' ' && isalnum(a[i+1]))
+                count++;
+        }
     }
-    label: cout<<"\nthere are total "<<count<<" keywords\n";
+    cout<<"\nthere are total "<<count<<" keywords\n";
     int s[26] = {0};
     cout<<"\nfrequency matrix of all alphabets : \n";
     for(int i=0;i<a.length();i++)
@@ -41,4 +47,16 @@ int main()
     {
         cout<<char(i+'a')<<" : "<<s[i]<<"\n";
     }
+    int m;
+    string cipher;
+    cout<<"enter the number to rotate and convert string to ceaser cipher : ";
+    cin>>m;
+    for(int i=0;i<n;i++)
+    {
+        if(isalpha(a[i]))
+            cipher += (char)((a[i]-'a'+m)%26 + 'a');
+        else
+            cipher += a[i];
+    }
+    cout<<"cipher text is : "<<cipher<<"\n";
 }
