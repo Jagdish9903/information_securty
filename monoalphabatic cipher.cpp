@@ -10,7 +10,7 @@ string encode(string key)
     for(int i=0;i<key.size();i++)
     {
         key[i] = toupper(key[i]);
-        if(f[key[i]-'A']==0)
+        if(f[key[i]-'A']==0 && isalpha(key[i]))
         {
             encrypt += key[i];
             f[key[i]-'A'] = 1;
