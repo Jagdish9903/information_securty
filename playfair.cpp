@@ -61,8 +61,7 @@ void matrix(string s,string key)
             c=0;
         }
     }
-
-    cout<<"matrix is : \n";
+    cout<<"matrix is : \n\n";
     for(int i=0;i<5;i++)
     {
         for(int j=0;j<5;j++)
@@ -94,7 +93,7 @@ string convert(string &dup)
     string dup2;
     for(int i=0;i<dup.size();i++)
     {
-        if(dup[i] == dup[i+1])
+        if(dup[i] == dup[i+1] || ((dup[i] == 'I' || dup[i+1] == 'I') && (dup[i] == 'J' || dup[i+1] == 'J')))
         {
             dup2 += dup[i];
             if(dup[i] != 'X')
@@ -114,10 +113,8 @@ string convert(string &dup)
     }
     int count = 0;
     int n = dup2.length();
-    cout<<"length of dup2 : "<<n<<"\n";
     for(int i=0;i<n;i++)
     {
-        cout<<i<< " : " <<dup2[i]<<"\n";
         if(isalpha(dup2[i]))
             count++;
     }
@@ -250,9 +247,9 @@ int main()
     matrix(s,key);
     string dup = duplicate(s);
     string dup2 = convert(dup);
-    cout<<"\npaired up plain text : " <<dup2<<"\n";
+    cout<<"\nPaired-up plain text : " <<dup2<<"\n";
     encrypt(dup2);
-    cout<<"\nfinal encrypted ans is : "<<ans<<"\n";
+    cout<<"\nFinal Encrypted text : "<<ans<<"\n";
     decrypt(ans);
-    cout<<"\nfinal decrypted ans is : "<<dec_ans<<"\n";
+    cout<<"\nFinal Decrypted text : "<<dec_ans<<"\n";
 }
