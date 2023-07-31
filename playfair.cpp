@@ -1,7 +1,8 @@
 #include<bits/stdc++.h>
 using namespace std;
 int m[5][5];
-string ans;
+string ans,dec_ans;
+int flag = 0;
 void matrix(string s,string key)
 {
     int a[26] = {0};
@@ -13,15 +14,13 @@ void matrix(string s,string key)
             a[key[i]-'A']=1;
             if(key[i]=='J' || key[i]=='I')
             {
+                if(key[i] == 'J' && flag == 0) flag=10;
+                if(key[i] == 'I' && flag == 0) flag=9;
                 a[8] = 2;
                 a[9] = 2;
             }
         }
     }
-    /*for(int i=0;i<26;i++)
-    {
-        cout<<i+'a'<<" : "<<a[i]<<"\n";
-    }*/
     int r=0,c=0;
     for(int i=0;i<key.size();i++)
     {
@@ -33,6 +32,8 @@ void matrix(string s,string key)
         else if(a[key[i]-'A']==2)
         {
             m[r][c++] = int(key[i]);
+            if(key[i] == 'I' && flag == 0) flag = 9;
+            else if(key[i] == 'J' && flag == 0) flag = 10;
             a[8] = -1;
             a[9] = -1;
         }
@@ -96,7 +97,11 @@ string convert(string &dup)
         if(dup[i] == dup[i+1])
         {
             dup2 += dup[i];
-            dup2 += 'X';
+            if(dup[i] != 'X')
+                dup2 += 'X';
+            else
+                dup2 += 'Y';
+
             dup2 += ' ';
         }
         else
@@ -118,7 +123,10 @@ string convert(string &dup)
     }
     if(count%2)
     {
+        if(dup2[n-3]!='X')
         dup2[n-2] = 'X';
+        else
+        dup2[n-2] = 'Y';
     }
     return dup2;
 }
@@ -167,7 +175,69 @@ void encrypt(string dup2)
     {
         p = dup2[i];
         q = dup2[i+1];
+        if(flag == 9)
+        {
+            if(p == 'J')
+                p = 'I';
+            if(q == 'J')
+                q = 'I';
+        }
+        else if(flag == 10)
+        {
+            if(p == 'I')
+                p = 'J';
+            if(q == 'I')
+                q = 'J';
+        }
         lastenc(p,q);
+    }
+}
+void decription(int p,int q)
+{
+    int find[4];
+    for(int i=0;i<5;i++)
+    {
+        for(int j=0;j<5;j++)
+        {
+            if(m[i][j] == char(p))
+            {
+                find[0] = i;
+                find[1] = j;
+            }
+            if(m[i][j] == char(q))
+            {
+                find[2] = i;
+                find[3] = j;
+            }
+        }
+    }
+    if(find[0] == find[2])
+    {
+        dec_ans += char(m[find[0]][(find[1]-1+5)%5]);
+        dec_ans += char(m[find[2]][(find[3]-1+5)%5]);
+        dec_ans += ' ';
+    }
+    else if(find[1] == find[3])
+    {
+        dec_ans += char(m[(find[0]-1+5)%5][find[1]]);
+        dec_ans += char(m[(find[2]-1+5)%5][find[3]]);
+        dec_ans += ' ';
+    }
+    else
+    {
+        dec_ans += char(m[find[0]][find[3]]);
+        dec_ans += char(m[find[2]][find[1]]);
+        dec_ans += ' ';
+    }
+}
+void decrypt(string ans)
+{
+    int p,q;
+    for(int i=0;i<ans.length()-1;i+=3)
+    {
+        p = ans[i];
+        q = ans[i+1];
+        decription(p,q);
     }
 }
 int main()
@@ -180,8 +250,9 @@ int main()
     matrix(s,key);
     string dup = duplicate(s);
     string dup2 = convert(dup);
-    cout<<dup<<"\n";
-    cout<<dup2<<"'okay'\n";
+    cout<<"\npaired up plain text : " <<dup2<<"\n";
     encrypt(dup2);
-    cout<<"final encrypted ans is : "<<ans<<"\n";
+    cout<<"\nfinal encrypted ans is : "<<ans<<"\n";
+    decrypt(ans);
+    cout<<"\nfinal decrypted ans is : "<<dec_ans<<"\n";
 }
