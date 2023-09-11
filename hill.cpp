@@ -1,8 +1,14 @@
 #include<bits/stdc++.h>
 using namespace std;
 int n;
-void encrypt(string p, string key)
+void encrypt(string l, string key)
 {
+    string p;
+    for(int i=0;i<l.length();i++)
+    {
+        if(isalnum(l[i]))
+        p.push_back(l[i]);
+    }
     if(key.length() <= 4)
         n = 2;
     else if(key.length() > 4)
@@ -19,7 +25,7 @@ void encrypt(string p, string key)
             else
             {
                 if(isalpha(key[k]))
-                    a[i][j] = key[k]%'A';
+                    a[i][j] = toupper(key[k])%'A';
                 else if(isdigit(key[k]))
                     a[i][j] = key[k]%'0';
             }
@@ -38,7 +44,7 @@ void encrypt(string p, string key)
     while(m>0)
     {
         for(int i=0;i<n;i++)
-        s[i][0] = p[k++]%'A';
+        s[i][0] = toupper(p[k++])%'A';
 
         int cipher[n][1];
         for(int i=0;i<n;i++)
@@ -61,8 +67,14 @@ void encrypt(string p, string key)
         m-=n;
     }
 }
-void decrypt(string p, string key)
+void decrypt(string l, string key)
 {
+    string p;
+    for(int i=0;i<l.length();i++)
+    {
+        if(isalnum(l[i]))
+            p.push_back(l[i]);
+    }
     int n;
     if(key.length() <= 4)
         n = 2;
@@ -80,13 +92,15 @@ void decrypt(string p, string key)
             else
             {
                 if(isalpha(key[k]))
-                    a[i][j] = key[k]%'A';
+                    a[i][j] = toupper(key[k])%'A';
                 else if(isdigit(key[k]))
                     a[i][j] = key[k]%'0';
             }
             k++;
         }
     }
+    int det = a[0][0] * ((a[1][1]*a[2][2]) - (a[2][1]*a[1][2])) -a[0][1] * (a[1][0]
+   * a[2][2] - a[2][0] * a[1][2]) + a[0][2] * (a[1][0] * a[2][1] - a[2][0] * a[1][1]);
     double c[n][n],b[n][n];
     for(int i=0;i<n;i++)
     {
@@ -114,17 +128,38 @@ void decrypt(string p, string key)
             }
         }
     }
+    //det = (det + 2600) % 26;
+    vector<int> xx = {1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25};
+    vector<int> yy = {1, 9, 21, 15, 3, 19, 7, 23, 11, 5, 17, 25};
     cout<<"inverse matrix : \n";
+    long div;
+    if(find(xx.begin(),xx.end(),det) != xx.end())
+    {
+        auto it = find(xx.begin(),xx.end(),det);
+        int i = it - xx.begin();
+        div = yy[i];
+    }
+    cout<<"det = "<<det<<endl;
+    cout<<"div = "<<div<<endl;
     for(int i=0;i<n;i++)
     {
         for(int j=0;j<n;j++)
         {
-            b[i][j] = b[i][j]/c[i][i];
+            b[i][j] = (b[i][j]/(c[i][i]) * det);
             cout<<b[i][j]<<"\t";
         }
         cout<<"\n";
     }
-
+    int f[n][n];
+    for(int i=0;i<n;i++)
+    {
+        for(int j=0;j<n;j++)
+        {
+            f[i][j] = ((((int)b[i][j]+ 2600) % 26) * 17) % 26;
+            cout<<f[i][j]<<"\t";
+        }
+        cout<<"\n";
+    }
     k = 0;
     int s[n][1];
     while(p.length()%n != 0)
@@ -137,7 +172,7 @@ void decrypt(string p, string key)
     while(m>0)
     {
         for(int i=0;i<n;i++)
-        s[i][0] = p[k++]%'A';
+        s[i][0] = toupper(p[k++])%'A';
 
         int decipher[n][1];
         for(int i=0;i<n;i++)
@@ -147,7 +182,7 @@ void decrypt(string p, string key)
                 decipher[i][j] = 0;
                 for(int l=0;l<n;l++)
                 {
-                    decipher[i][j] += b[i][l]*s[l][j];
+                    decipher[i][j] += f[i][l]*s[l][j];
                 }
                 decipher[i][j] %= 26;
             }
