@@ -99,8 +99,12 @@ void decrypt(string l, string key)
             k++;
         }
     }
-    int det = a[0][0] * ((a[1][1]*a[2][2]) - (a[2][1]*a[1][2])) -a[0][1] * (a[1][0]
-   * a[2][2] - a[2][0] * a[1][2]) + a[0][2] * (a[1][0] * a[2][1] - a[2][0] * a[1][1]);
+    int det;
+    if(n==3)
+        det = a[0][0] * ((a[1][1]*a[2][2]) - (a[2][1]*a[1][2])) -a[0][1] * (a[1][0]
+        * a[2][2] - a[2][0] * a[1][2]) + a[0][2] * (a[1][0] * a[2][1] - a[2][0] * a[1][1]);
+    else if(n==2)
+        det = a[0][0]*a[1][1] - a[1][0]*a[0][1];
     double c[n][n],b[n][n];
     for(int i=0;i<n;i++)
     {
@@ -128,34 +132,51 @@ void decrypt(string l, string key)
             }
         }
     }
-    //det = (det + 2600) % 26;
+    int tmp = (det + 26000) % 26;
+    if(26 % tmp == 0 || tmp%2 == 0)
+    {
+        cout<<"it is not possible to decrypt this text with given key!\n";
+        return;
+    }
     vector<int> xx = {1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25};
     vector<int> yy = {1, 9, 21, 15, 3, 19, 7, 23, 11, 5, 17, 25};
     cout<<"inverse matrix : \n";
     long div;
-    if(find(xx.begin(),xx.end(),det) != xx.end())
+    if(find(xx.begin(),xx.end(),tmp) != xx.end())
     {
-        auto it = find(xx.begin(),xx.end(),det);
+        auto it = find(xx.begin(),xx.end(),tmp);
         int i = it - xx.begin();
         div = yy[i];
     }
     cout<<"det = "<<det<<endl;
     cout<<"div = "<<div<<endl;
+    /*for(int i=0;i<n;i++)
+    {
+        for(int j=0;j<n;j++)
+        {
+            b[i][j] = (b[i][j] * det)/(int)(c[i][i]);
+            cout<<b[i][j]<<"\t";
+        }
+        cout<<"\n";
+    }*/
+    int flag = 1;
     for(int i=0;i<n;i++)
     {
         for(int j=0;j<n;j++)
         {
-            b[i][j] = (b[i][j]/(c[i][i]) * det);
-            cout<<b[i][j]<<"\t";
+            b[j][i] = a[(i+1)%3][(j+1)%3]*a[(i+2)%3][(j+2)%3] - a[(i+2)%3][(j+1)%3]*a[(i+1)%3][(j+2)%3];
+            b[j][i] *= flag;
+            cout<<b[j][i]<<" ";
+            flag *= -1;
         }
-        cout<<"\n";
+        cout<<endl;
     }
     int f[n][n];
     for(int i=0;i<n;i++)
     {
         for(int j=0;j<n;j++)
         {
-            f[i][j] = ((((int)b[i][j]+ 2600) % 26) * 17) % 26;
+            f[i][j] = (((((int)b[i][j] + 26000) % 26)) * div) % 26;
             cout<<f[i][j]<<"\t";
         }
         cout<<"\n";
@@ -214,3 +235,4 @@ int main()
         decrypt(p, key);
     }
 }
+
